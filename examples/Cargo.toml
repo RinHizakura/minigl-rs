@@ -1,0 +1,14 @@
+[package]
+name = "minigl-rs-examples"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+minigl = {path = ".."}
+
+[dependencies]
+sdl2 = "0.35.2"
+
+[[example]]
+name = "hello"
+path = "hello.rs"

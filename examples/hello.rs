@@ -1,4 +1,4 @@
-use minigl::config::PIXEL_BYTES;
+use minigl::config::{MGLBit, PIXEL_BYTES};
 use minigl::mgl;
 use minigl::zbuffer::ZBuffer;
 
@@ -27,7 +27,6 @@ pub const WIN_PITCH: usize = WIN_SIZE_X * PIXEL_BYTES;
 fn main() {
     println!("Hello");
 
-    let screen = [0 as u8; WIN_PITCH * WIN_SIZE_Y];
     /* Init SDL */
     let sdl_context = sdl2::init().expect("error: SDL init");
     let video_subsystem = sdl_context.video().expect("error: SDL video");
@@ -53,18 +52,22 @@ fn main() {
         )
         .expect("error: SDL texture");
 
-    let change = false;
+    let mut change = true;
 
     let framebuffer = ZBuffer::new(WIN_SIZE_X, WIN_SIZE_Y);
     mgl::init(framebuffer);
-    mgl::clear(0x10);
+    mgl::clear(MGLBit::COLOR);
     //glTextSize(GL_TEXT_SIZE24x24);
     //glDrawText("Hello World!\nFrom TinyGL", 0, 0, 0x00FFFFFF);
 
     loop {
         handle_user_input(&mut event_pump);
 
+        let screen = mgl::pbuffer();
+
+        //println!("{:?} {:?} {:?} {:?}", screen[0], screen[1], screen[2], screen[3]);
         if change == true {
+            change = false;
             texture
                 .update(None, &screen, WIN_PITCH)
                 .expect("error: texture update");

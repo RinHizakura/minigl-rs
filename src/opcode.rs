@@ -1,4 +1,13 @@
-pub const OP_CLEAR_COLOR: usize = 1;
+use crate::config::MGLBit;
+use crate::mgl;
+
+macro_rules! RGB_TO_PIXEL {
+    ($r:expr, $g:expr, $b:expr) => {
+        (($r as u32 & 0xff) << 16) | (($g as u32 & 0xff) << 8) | ($b as u32 & 0xff)
+    };
+}
+
+pub const OP_CLEAR: usize = 1;
 
 union MGLParam {
     pub op: usize,
@@ -17,9 +26,17 @@ impl MGLOp {
         MGLOp { p: v }
     }
 
-    fn op_clear_color(&self) {
+    fn op_clear(&self) {
+        let ctx = mgl::ctx();
         let p = unsafe { self.p[1].i };
-        println!("p2 = {}", p);
+
+        /* FIXME: let user declares their clear color instead of using the default */
+        let argb = RGB_TO_PIXEL!(ctx.clear_color.y, ctx.clear_color.z, ctx.clear_color.w);
+        ctx.zb.clear(
+            (p & MGLBit::COLOR.bits()) != 0,
+            (p & MGLBit::DEPTH.bits()) != 0,
+            argb,
+        );
     }
 
     pub fn add_param_u32(&mut self, p: u32) {
@@ -31,8 +48,8 @@ impl MGLOp {
          * executing it directly */
         let op = unsafe { self.p[0].op };
         match op {
-            OP_CLEAR_COLOR => {
-                self.op_clear_color();
+            OP_CLEAR => {
+                self.op_clear();
             }
 
             _ => todo!(),

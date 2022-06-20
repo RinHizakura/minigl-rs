@@ -1,5 +1,8 @@
 use crate::config::MGLBit;
 use crate::mgl;
+use crate::err::MGLError;
+
+type Result<T> = std::result::Result<T, MGLError>;
 
 macro_rules! RGB_TO_PIXEL {
     ($r:expr, $g:expr, $b:expr) => {
@@ -26,8 +29,8 @@ impl MGLOp {
         MGLOp { p: v }
     }
 
-    fn op_clear(&self) {
-        let ctx = mgl::ctx();
+    fn op_clear(&self) -> Result<()> {
+        let ctx = mgl::ctx()?;
         let p = unsafe { self.p[1].i };
 
         /* FIXME: let user declares their clear color instead of using the default */
@@ -37,22 +40,26 @@ impl MGLOp {
             (p & MGLBit::DEPTH.bits()) != 0,
             argb,
         );
+
+        Ok(())
     }
 
     pub fn add_param_u32(&mut self, p: u32) {
         self.p.push(MGLParam { i: p });
     }
 
-    pub fn run_op(&self) {
+    pub fn run_op(&self) -> Result<()> {
         /* FIXME: We may want to pipeline our OP better instead of
          * executing it directly */
         let op = unsafe { self.p[0].op };
         match op {
             OP_CLEAR => {
-                self.op_clear();
+                self.op_clear()?;
             }
 
             _ => todo!(),
         }
+
+        Ok(())
     }
 }

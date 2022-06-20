@@ -1,12 +1,13 @@
 use std::fmt;
 
-pub enum MglError {
-    MglErrorMem,
+pub enum MGLError {
+    EMEM,
+    EFAULT,
 }
 
 /* TODO */
-impl fmt::Debug for MglError {
+impl fmt::Debug for MGLError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("MglError").finish()
+        write!(f, "{:?}", self)
     }
 }

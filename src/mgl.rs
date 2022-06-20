@@ -1,8 +1,11 @@
 use crate::config::MGLBit;
 use crate::opcode;
 use crate::opcode::MGLOp;
+use crate::err::MGLError;
 use crate::zbuffer::ZBuffer;
 use std::sync::Once;
+
+type Result<T> = std::result::Result<T, MGLError>;
 
 /* Let's use cgmath for the vector operation instead of
  * reinventing the wheel. If we want to learn about the
@@ -41,27 +44,29 @@ pub fn init(zb: ZBuffer) {
     });
 }
 
-pub fn ctx() -> &'static mut MGLContext {
+pub fn ctx() -> Result<&'static mut MGLContext> {
     unsafe {
         match &mut MGL_CONTEXT {
-            Some(x) => x,
-            None => todo!(),
+            Some(x) => Ok(x),
+            None => Err(MGLError::EFAULT),
         }
     }
 }
 
-pub fn pbuffer() -> Vec<u8> {
+pub fn pbuffer() -> Result<Vec<u8>>{
     unsafe {
         match &mut MGL_CONTEXT {
             /* FIXME: Will this be too inefficient? */
-            Some(x) => x.zb.pbuf.iter().flat_map(|val| val.to_be_bytes()).collect(),
-            None => todo!(),
+            Some(x) => Ok(x.zb.pbuf.iter().flat_map(|val| val.to_be_bytes()).collect()),
+            None => Err(MGLError::EFAULT),
         }
     }
 }
 
-pub fn clear(mask: MGLBit) {
+pub fn clear(mask: MGLBit) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_CLEAR);
     op.add_param_u32(mask.bits() as u32);
-    op.run_op();
+    op.run_op()?;
+
+    Ok(())
 }

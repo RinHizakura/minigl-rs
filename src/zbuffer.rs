@@ -1,6 +1,3 @@
-use crate::config::PIXEL_BYTES;
-use crate::err::MglError;
-
 pub struct ZBuffer {
     xsize: usize,
     ysize: usize,

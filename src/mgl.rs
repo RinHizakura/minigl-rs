@@ -1,7 +1,7 @@
-use crate::config::MGLBit;
+use crate::config::*;
+use crate::err::MGLError;
 use crate::opcode;
 use crate::opcode::MGLOp;
-use crate::err::MGLError;
 use crate::zbuffer::ZBuffer;
 use std::sync::Once;
 
@@ -16,6 +16,7 @@ use cgmath::*;
 pub struct MGLContext {
     pub zb: ZBuffer,
     pub clear_color: Vector4<u8>,
+    pub textsize: MGLTextSize,
 }
 
 impl MGLContext {
@@ -28,6 +29,7 @@ impl MGLContext {
                 z: 0x00, // g
                 w: 0x00, // b
             },
+            textsize: MGLTextSize::TextSize8X8,
         }
     }
 }
@@ -53,11 +55,16 @@ pub fn ctx() -> Result<&'static mut MGLContext> {
     }
 }
 
-pub fn pbuffer() -> Result<Vec<u8>>{
+pub fn pbuffer() -> Result<Vec<u8>> {
     unsafe {
         match &mut MGL_CONTEXT {
             /* FIXME: Will this be too inefficient? */
-            Some(x) => Ok(x.zb.pbuf.iter().flat_map(|val| val.to_be_bytes()).collect()),
+            Some(x) => Ok(x
+                .zb
+                .get_pbuf()
+                .iter()
+                .flat_map(|val| val.to_be_bytes())
+                .collect()),
             None => Err(MGLError::EFAULT),
         }
     }
@@ -67,6 +74,18 @@ pub fn clear(mask: MGLBit) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_CLEAR);
     op.add_param_u32(mask.bits() as u32);
     op.run_op()?;
+
+    Ok(())
+}
+
+pub fn draw_text(text: &str, xbase: usize, ybase: usize, color: MGLColor) -> Result<()> {
+    let (w, h);
+    unsafe {
+        (w, h) = match &MGL_CONTEXT {
+            Some(x) => (x.zb.xsize, x.zb.ysize),
+            None => return Err(MGLError::EFAULT),
+        };
+    }
 
     Ok(())
 }

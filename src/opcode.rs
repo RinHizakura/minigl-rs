@@ -1,6 +1,6 @@
 use crate::config::MGLBit;
-use crate::mgl;
 use crate::err::MGLError;
+use crate::mgl;
 
 type Result<T> = std::result::Result<T, MGLError>;
 

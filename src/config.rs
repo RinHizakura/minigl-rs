@@ -6,3 +6,13 @@ bitflags! {
         const DEPTH     = 0b00000010;
     }
 }
+
+bitflags! {
+    pub struct MGLColor: u32 {
+        const RED      = 0xff0000;
+    }
+}
+
+pub enum MGLTextSize {
+    TextSize8X8,
+}

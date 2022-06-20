@@ -1,9 +1,9 @@
 pub struct ZBuffer {
-    xsize: usize,
-    ysize: usize,
+    pub xsize: usize,
+    pub ysize: usize,
 
     zbuf: Vec<u16>,
-    pub pbuf: Vec<u32>,
+    pbuf: Vec<u32>,
 }
 
 impl ZBuffer {
@@ -31,5 +31,9 @@ impl ZBuffer {
             let pbuf = &mut self.pbuf;
             pbuf[0..(self.xsize * self.ysize)].fill(argb);
         }
+    }
+
+    pub fn get_pbuf(&self) -> &Vec<u32> {
+        &self.pbuf
     }
 }

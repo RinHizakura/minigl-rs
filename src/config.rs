@@ -16,3 +16,11 @@ bitflags! {
 pub enum MGLTextSize {
     TextSize8X8,
 }
+
+impl MGLTextSize {
+    pub fn sz(&self) -> usize {
+        match self {
+            MGLTextSize::TextSize8X8 => 1,
+        }
+    }
+}

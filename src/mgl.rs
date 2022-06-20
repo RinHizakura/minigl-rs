@@ -78,13 +78,50 @@ pub fn clear(mask: MGLBit) -> Result<()> {
     Ok(())
 }
 
+fn renderchar(x: usize, y: usize, mult: usize, color: MGLColor) -> Result<()> {
+    for x in 0..8 {
+        for y in 0..8 {
+            for i in 0..mult {
+                for j in 0..mult {
+                    todo!();
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
 pub fn draw_text(text: &str, xbase: usize, ybase: usize, color: MGLColor) -> Result<()> {
-    let (w, h);
+    let (w, h, mult);
     unsafe {
-        (w, h) = match &MGL_CONTEXT {
-            Some(x) => (x.zb.xsize, x.zb.ysize),
+        match &MGL_CONTEXT {
+            Some(x) => {
+                w = x.zb.xsize;
+                h = x.zb.ysize;
+                mult = x.textsize.sz()
+            }
             None => return Err(MGLError::EFAULT),
         };
+    }
+
+    let mut xoff = xbase;
+    let mut yoff = ybase;
+    let s: Vec<u8> = text.as_bytes().to_vec();
+    for c in s {
+        if yoff >= h {
+            break;
+        }
+
+        if c == b'\n' {
+            xoff = 0;
+            yoff += 8 * mult;
+        } else {
+            if xoff < w {
+                renderchar(xoff, yoff, mult, color);
+                xoff += 8 * mult;
+            }
+        }
     }
 
     Ok(())

@@ -1,4 +1,4 @@
-use minigl::config::{MGLBit, PIXEL_BYTES};
+use minigl::config::*;
 use minigl::mgl;
 use minigl::zbuffer::ZBuffer;
 
@@ -58,7 +58,7 @@ fn main() {
     mgl::init(framebuffer);
     mgl::clear(MGLBit::COLOR).expect("error: MGL clear");
     //glTextSize(GL_TEXT_SIZE24x24);
-    //glDrawText("Hello World!\nFrom TinyGL", 0, 0, 0x00FFFFFF);
+    mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED);
 
     loop {
         handle_user_input(&mut event_pump);

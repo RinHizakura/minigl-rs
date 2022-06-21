@@ -11,10 +11,11 @@ macro_rules! RGB_TO_PIXEL {
 }
 
 pub const OP_CLEAR: usize = 1;
+pub const OP_PLOT_PIXEL: usize = 2;
 
 union MGLParam {
     pub op: usize,
-    pub i: u32,
+    pub i: usize,
     pub f: f32,
 }
 
@@ -44,8 +45,8 @@ impl MGLOp {
         Ok(())
     }
 
-    pub fn add_param_u32(&mut self, p: u32) {
-        self.p.push(MGLParam { i: p });
+    pub fn add_param_i(&mut self, i: usize) {
+        self.p.push(MGLParam { i: i });
     }
 
     pub fn run_op(&self) -> Result<()> {

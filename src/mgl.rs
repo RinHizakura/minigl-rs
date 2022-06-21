@@ -72,18 +72,35 @@ pub fn pbuffer() -> Result<Vec<u8>> {
 
 pub fn clear(mask: MGLBit) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_CLEAR);
-    op.add_param_u32(mask.bits() as u32);
+    op.add_param_i(mask.bits());
     op.run_op()?;
 
     Ok(())
 }
 
-fn renderchar(x: usize, y: usize, mult: usize, color: MGLColor) -> Result<()> {
+pub fn plot_pixel(x: usize, y: usize, color: MGLColor) -> Result<()> {
+    let w;
+    unsafe {
+        match &MGL_CONTEXT {
+            Some(x) => w = x.zb.xsize,
+            None => return Err(MGLError::EFAULT),
+        };
+    }
+
+    let mut op = MGLOp::new(opcode::OP_PLOT_PIXEL);
+    op.add_param_i(x + y * w);
+    op.add_param_i(color.bits());
+    op.run_op()?;
+
+    Ok(())
+}
+
+fn renderchar(xoff: usize, yoff: usize, mult: usize, color: MGLColor) -> Result<()> {
     for x in 0..8 {
         for y in 0..8 {
             for i in 0..mult {
                 for j in 0..mult {
-                    todo!();
+                    plot_pixel(xoff + i + x * mult, yoff + j + y * mult, color)?;
                 }
             }
         }
@@ -118,7 +135,7 @@ pub fn draw_text(text: &str, xbase: usize, ybase: usize, color: MGLColor) -> Res
             yoff += 8 * mult;
         } else {
             if xoff < w {
-                renderchar(xoff, yoff, mult, color);
+                renderchar(xoff, yoff, mult, color)?;
                 xoff += 8 * mult;
             }
         }

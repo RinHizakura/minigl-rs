@@ -15,7 +15,7 @@ pub const OP_PLOT_PIXEL: usize = 2;
 
 union MGLParam {
     pub op: usize,
-    pub i: usize,
+    pub u: usize,
     pub f: f32,
 }
 
@@ -32,7 +32,7 @@ impl MGLOp {
 
     fn op_clear(&self) -> Result<()> {
         let ctx = mgl::ctx()?;
-        let p = unsafe { self.p[1].i };
+        let p = unsafe { self.p[1].u };
 
         /* FIXME: let user declares their clear color instead of using the default */
         let argb = RGB_TO_PIXEL!(ctx.clear_color.y, ctx.clear_color.z, ctx.clear_color.w);
@@ -45,8 +45,18 @@ impl MGLOp {
         Ok(())
     }
 
-    pub fn add_param_i(&mut self, i: usize) {
-        self.p.push(MGLParam { i: i });
+    fn op_plot_pixel(&self) -> Result<()> {
+        let ctx = mgl::ctx()?;
+        let x = unsafe { self.p[1].u };
+        let argb = unsafe { self.p[2].u } as u32;
+
+        ctx.zb.set(x, argb);
+
+        Ok(())
+    }
+
+    pub fn add_param_u(&mut self, u: usize) {
+        self.p.push(MGLParam { u: u });
     }
 
     pub fn run_op(&self) -> Result<()> {
@@ -57,7 +67,9 @@ impl MGLOp {
             OP_CLEAR => {
                 self.op_clear()?;
             }
-
+            OP_PLOT_PIXEL => {
+                self.op_plot_pixel()?;
+            }
             _ => todo!(),
         }
 

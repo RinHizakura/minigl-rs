@@ -3,6 +3,7 @@ use std::fmt;
 pub enum MGLError {
     EMEM,
     EFAULT,
+    EINVALID,
 }
 
 /* TODO */

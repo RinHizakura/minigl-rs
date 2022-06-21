@@ -21,12 +21,16 @@ impl ZBuffer {
         }
     }
 
+    pub fn set(&mut self, x: usize, argb: u32) {
+        let pbuf = &mut self.pbuf;
+        pbuf[x] = argb;
+    }
+
     pub fn clear(&mut self, do_color: bool, do_depth: bool, argb: u32) {
         if do_depth {
             todo!();
         }
 
-        println!("argb {:x}", argb);
         if do_color {
             let pbuf = &mut self.pbuf;
             pbuf[0..(self.xsize * self.ysize)].fill(argb);

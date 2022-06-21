@@ -58,7 +58,7 @@ fn main() {
     mgl::init(framebuffer);
     mgl::clear(MGLBit::COLOR).expect("error: MGL clear");
     //glTextSize(GL_TEXT_SIZE24x24);
-    mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED);
+    mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
 
     loop {
         handle_user_input(&mut event_pump);

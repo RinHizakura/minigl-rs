@@ -24,8 +24,8 @@ impl MGLContext {
         MGLContext {
             zb: zb,
             clear_color: Vector4 {
-                x: 0xff, // a
-                y: 0xff, // r
+                x: 0x00, // a
+                y: 0x00, // r
                 z: 0x00, // g
                 w: 0x00, // b
             },
@@ -72,25 +72,30 @@ pub fn pbuffer() -> Result<Vec<u8>> {
 
 pub fn clear(mask: MGLBit) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_CLEAR);
-    op.add_param_i(mask.bits());
+    op.add_param_u(mask.bits());
     op.run_op()?;
 
     Ok(())
 }
 
 pub fn plot_pixel(x: usize, y: usize, color: MGLColor) -> Result<()> {
-    let w;
+    let (w, h);
     unsafe {
         match &MGL_CONTEXT {
-            Some(x) => w = x.zb.xsize,
+            Some(x) => {
+                w = x.zb.xsize;
+                h = x.zb.ysize;
+            }
             None => return Err(MGLError::EFAULT),
         };
     }
 
-    let mut op = MGLOp::new(opcode::OP_PLOT_PIXEL);
-    op.add_param_i(x + y * w);
-    op.add_param_i(color.bits());
-    op.run_op()?;
+    if x < w && y < h {
+        let mut op = MGLOp::new(opcode::OP_PLOT_PIXEL);
+        op.add_param_u(x + y * w);
+        op.add_param_u(color.bits());
+        op.run_op()?;
+    }
 
     Ok(())
 }

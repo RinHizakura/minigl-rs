@@ -1,5 +1,6 @@
 use crate::config::*;
 use crate::err::MGLError;
+use crate::font8x8::*;
 use crate::opcode;
 use crate::opcode::MGLOp;
 use crate::zbuffer::ZBuffer;
@@ -29,7 +30,7 @@ impl MGLContext {
                 z: 0x00, // g
                 w: 0x00, // b
             },
-            textsize: MGLTextSize::TextSize8X8,
+            textsize: MGLTextSize::TextSize32x32,
         }
     }
 }
@@ -100,12 +101,21 @@ pub fn plot_pixel(x: usize, y: usize, color: MGLColor) -> Result<()> {
     Ok(())
 }
 
-fn renderchar(xoff: usize, yoff: usize, mult: usize, color: MGLColor) -> Result<()> {
+fn renderchar(
+    ch_bitmap: &[u8],
+    xoff: usize,
+    yoff: usize,
+    mult: usize,
+    color: MGLColor,
+) -> Result<()> {
     for x in 0..8 {
         for y in 0..8 {
-            for i in 0..mult {
-                for j in 0..mult {
-                    plot_pixel(xoff + i + x * mult, yoff + j + y * mult, color)?;
+            let set = ch_bitmap[y] & (1 << x);
+            if set != 0 {
+                for i in 0..mult {
+                    for j in 0..mult {
+                        plot_pixel(xoff + i + x * mult, yoff + j + y * mult, color)?;
+                    }
                 }
             }
         }
@@ -140,7 +150,7 @@ pub fn draw_text(text: &str, xbase: usize, ybase: usize, color: MGLColor) -> Res
             yoff += 8 * mult;
         } else {
             if xoff < w {
-                renderchar(xoff, yoff, mult, color)?;
+                renderchar(&FONT8X8_BASIC[c as usize], xoff, yoff, mult, color)?;
                 xoff += 8 * mult;
             }
         }

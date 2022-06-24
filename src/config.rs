@@ -28,3 +28,19 @@ impl MGLTextSize {
         }
     }
 }
+
+pub enum MGLMatrixMode {
+    ModeModelView,
+    ModeProjection,
+    ModeTexture,
+}
+
+impl MGLMatrixMode {
+    pub fn idx(&self) -> usize {
+        match self {
+            MGLMatrixMode::ModeModelView => 0,
+            MGLMatrixMode::ModeProjection => 1,
+            MGLMatrixMode::ModeTexture => 2,
+        }
+    }
+}

@@ -18,6 +18,9 @@ pub struct MGLContext {
     pub zb: ZBuffer,
     pub clear_color: Vector4<u8>,
     pub textsize: MGLTextSize,
+    pub matrix_stack: [Vec<Matrix4<u32>>; 3],
+    pub matrix_mode: u8,
+    pub matrix_mode_updated: bool,
 }
 
 impl MGLContext {
@@ -31,6 +34,9 @@ impl MGLContext {
                 w: 0x00, // b
             },
             textsize: MGLTextSize::TextSize32x32,
+            matrix_stack: Default::default(),
+            matrix_mode: 0,
+            matrix_mode_updated: false,
         }
     }
 }
@@ -155,6 +161,21 @@ pub fn draw_text(text: &str, xbase: usize, ybase: usize, color: MGLColor) -> Res
             }
         }
     }
+
+    Ok(())
+}
+
+pub fn matrix_mode(mode: MGLMatrixMode) -> Result<()> {
+    let mut op = MGLOp::new(opcode::OP_MATRIX_MODE);
+    op.add_param_u(mode.idx());
+    op.run_op()?;
+
+    Ok(())
+}
+
+pub fn load_identity() -> Result<()> {
+    let mut op = MGLOp::new(opcode::OP_LOAD_IDENTITY);
+    op.run_op()?;
 
     Ok(())
 }

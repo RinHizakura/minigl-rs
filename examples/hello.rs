@@ -52,29 +52,28 @@ fn main() {
         )
         .expect("error: SDL texture");
 
-    let mut change = true;
-
     let framebuffer = ZBuffer::new(WIN_SIZE_X, WIN_SIZE_Y);
     mgl::init(framebuffer);
-    mgl::clear(MGLBit::COLOR).expect("error: MGL clear");
     //glTextSize(GL_TEXT_SIZE24x24);
-    mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
 
     loop {
         handle_user_input(&mut event_pump);
 
+        mgl::clear(MGLBit::COLOR).expect("error: MGL clear");
+        // Draw a triangle
+        mgl::matrix_mode(MGLMatrixMode::ModeModelView);
+        mgl::load_identity();
+
+        mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
+
         let screen = mgl::pbuffer().expect("error: MGL pbuffer");
 
-        //println!("{:?} {:?} {:?} {:?}", screen[0], screen[1], screen[2], screen[3]);
-        if change == true {
-            change = false;
-            texture
-                .update(None, &screen, WIN_PITCH)
-                .expect("error: texture update");
-            canvas
-                .copy(&texture, None, None)
-                .expect("error: canvas copy");
-            canvas.present();
-        }
+        texture
+            .update(None, &screen, WIN_PITCH)
+            .expect("error: texture update");
+        canvas
+            .copy(&texture, None, None)
+            .expect("error: canvas copy");
+        canvas.present();
     }
 }

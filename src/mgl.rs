@@ -1,6 +1,7 @@
 use crate::config::*;
 use crate::err::MGLError;
 use crate::font8x8::*;
+use crate::matrix_stack::*;
 use crate::opcode;
 use crate::opcode::MGLOp;
 use crate::zbuffer::ZBuffer;
@@ -18,9 +19,9 @@ pub struct MGLContext {
     pub zb: ZBuffer,
     pub clear_color: Vector4<u8>,
     pub textsize: MGLTextSize,
-    pub matrix_stack: [Vec<Matrix4<u32>>; 3],
+    pub matrix_stack: [MatrixStack<Matrix4<f32>>; 3],
     pub matrix_mode: u8,
-    pub matrix_mode_updated: bool,
+    pub matrix_model_projection_updated: bool,
 }
 
 impl MGLContext {
@@ -36,7 +37,7 @@ impl MGLContext {
             textsize: MGLTextSize::TextSize32x32,
             matrix_stack: Default::default(),
             matrix_mode: 0,
-            matrix_mode_updated: false,
+            matrix_model_projection_updated: false,
         }
     }
 }
@@ -46,7 +47,13 @@ static MGL_CONTEXT_SET: Once = Once::new();
 
 pub fn init(zb: ZBuffer) {
     MGL_CONTEXT_SET.call_once(|| {
-        let ctx = MGLContext::new(zb);
+        let mut ctx = MGLContext::new(zb);
+        /* Preparing a matrix on the top of stack first, they will be modified
+         * by some MGL operation. */
+        for i in 0..3 {
+            ctx.matrix_stack[i].push(Matrix4::zero());
+        }
+
         unsafe {
             MGL_CONTEXT.get_or_insert(ctx);
         }
@@ -174,7 +181,14 @@ pub fn matrix_mode(mode: MGLMatrixMode) -> Result<()> {
 }
 
 pub fn load_identity() -> Result<()> {
-    let mut op = MGLOp::new(opcode::OP_LOAD_IDENTITY);
+    let op = MGLOp::new(opcode::OP_LOAD_IDENTITY);
+    op.run_op()?;
+
+    Ok(())
+}
+
+pub fn push_matrix() -> Result<()> {
+    let op = MGLOp::new(opcode::OP_PUSH_MATRIX);
     op.run_op()?;
 
     Ok(())

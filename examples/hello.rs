@@ -61,8 +61,9 @@ fn main() {
 
         mgl::clear(MGLBit::COLOR).expect("error: MGL clear");
         // Draw a triangle
-        mgl::matrix_mode(MGLMatrixMode::ModeModelView);
-        mgl::load_identity();
+        mgl::matrix_mode(MGLMatrixMode::ModeModelView).expect("error: MGL matrix mode");
+        mgl::load_identity().expect("error: MGL load identity");
+        mgl::push_matrix().expect("error: MGL push matrix");
 
         mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
 

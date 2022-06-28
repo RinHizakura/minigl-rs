@@ -15,6 +15,7 @@ pub const OP_CLEAR: usize = 1;
 pub const OP_PLOT_PIXEL: usize = 2;
 pub const OP_MATRIX_MODE: usize = 3;
 pub const OP_LOAD_IDENTITY: usize = 4;
+pub const OP_PUSH_MATRIX: usize = 5;
 
 union MGLParam {
     pub op: usize,
@@ -69,12 +70,23 @@ impl MGLOp {
 
     fn op_load_identity(&self) -> Result<()> {
         let ctx = mgl::ctx()?;
-
         let mode = ctx.matrix_mode as usize;
 
-        let m = Matrix4::new(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        let _m = ctx.matrix_stack[mode].pop().ok_or(MGLError::EINVALID)?;
+        ctx.matrix_stack[mode].push(Matrix4::identity());
+
+        ctx.matrix_model_projection_updated = ctx.matrix_mode <= 1;
+        Ok(())
+    }
+
+    fn op_push_matrix(&self) -> Result<()> {
+        let ctx = mgl::ctx()?;
+        let mode = ctx.matrix_mode as usize;
+
+        let m = ctx.matrix_stack[mode].pop().ok_or(MGLError::EINVALID)?;
         ctx.matrix_stack[mode].push(m);
-        ctx.matrix_mode_updated = ctx.matrix_mode <= 1;
+
+        ctx.matrix_model_projection_updated = ctx.matrix_mode <= 1;
         Ok(())
     }
 
@@ -91,6 +103,7 @@ impl MGLOp {
             OP_PLOT_PIXEL => self.op_plot_pixel()?,
             OP_MATRIX_MODE => self.op_matrix_mode()?,
             OP_LOAD_IDENTITY => self.op_load_identity()?,
+            OP_PUSH_MATRIX => self.op_push_matrix()?,
             _ => todo!(),
         }
 

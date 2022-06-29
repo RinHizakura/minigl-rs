@@ -193,3 +193,14 @@ pub fn push_matrix() -> Result<()> {
 
     Ok(())
 }
+
+pub fn rotate(angle:f32, x:f32, y:f32, z:f32) -> Result<()> {
+    let mut op = MGLOp::new(opcode::OP_ROTATE);
+    op.add_param_f(angle);
+    op.add_param_f(x);
+    op.add_param_f(y);
+    op.add_param_f(z);
+    op.run_op()?;
+
+    Ok(())
+}

@@ -64,6 +64,8 @@ fn main() {
         mgl::matrix_mode(MGLMatrixMode::ModeModelView).expect("error: MGL matrix mode");
         mgl::load_identity().expect("error: MGL load identity");
         mgl::push_matrix().expect("error: MGL push matrix");
+        let angle = 60.0;
+        mgl::rotate(angle, 0.0, 0.0, 1.0).expect("error: MGL rotate");
 
         mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
 

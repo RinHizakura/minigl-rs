@@ -33,3 +33,49 @@ pub fn op_push_matrix() -> Result<()> {
     ctx.matrix_model_projection_updated = ctx.matrix_mode <= 1;
     Ok(())
 }
+
+pub fn op_rotate(angle: f32, x: f32, y:f32, z:f32) -> Result<()> {
+
+    let dir_code = ((x != 0.0) as usize) << 2 |
+                   ((y != 0.0) as usize) << 1 |
+                   ((z != 0.0) as usize) << 0;
+
+    // http://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
+    let (angle_deg, m);
+    match dir_code {
+        1 => {
+            if z < 0.0 {
+                angle_deg = Deg(-angle);
+            }
+            else
+            {
+                angle_deg = Deg(angle);
+            }
+            m = Matrix4::from_angle_z(angle_deg);
+        }
+        2 => {
+            if y < 0.0 {
+                angle_deg = Deg(-angle);
+            }
+            else
+            {
+                angle_deg = Deg(angle);
+            }
+            m = Matrix4::from_angle_y(angle_deg);
+        }
+        4 => {
+            if x < 0.0 {
+                angle_deg = Deg(-angle);
+            }
+            else
+            {
+                angle_deg = Deg(angle);
+            }
+            m = Matrix4::from_angle_x(angle_deg);
+        }
+        // TODO: only simple case of rotation is supported now
+        _ => todo!(),
+    }
+
+    Ok(())
+}

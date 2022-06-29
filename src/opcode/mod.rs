@@ -13,6 +13,7 @@ pub const OP_PLOT_PIXEL: usize = 2;
 pub const OP_MATRIX_MODE: usize = 3;
 pub const OP_LOAD_IDENTITY: usize = 4;
 pub const OP_PUSH_MATRIX: usize = 5;
+pub const OP_ROTATE: usize = 6;
 
 union MGLParam {
     pub op: usize,
@@ -35,6 +36,10 @@ impl MGLOp {
         self.p.push(MGLParam { u: u });
     }
 
+    pub fn add_param_f(&mut self, f: f32) {
+        self.p.push(MGLParam { f: f });
+    }
+
     pub fn run_op(&self) -> Result<()> {
         /* FIXME: We may want to pipeline our OP better instead of
          * executing it directly */
@@ -55,6 +60,13 @@ impl MGLOp {
             }
             OP_LOAD_IDENTITY => matrix::op_load_identity()?,
             OP_PUSH_MATRIX => matrix::op_push_matrix()?,
+            OP_ROTATE => {
+                let angle = unsafe { self.p[1].f };
+                let x = unsafe { self.p[2].f };
+                let y = unsafe { self.p[3].f };
+                let z = unsafe { self.p[4].f };
+                matrix::op_rotate(angle,x,y,z)?
+            }
             _ => todo!(),
         }
 

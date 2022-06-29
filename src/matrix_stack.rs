@@ -2,11 +2,11 @@ pub struct MatrixStack<T> {
     inner: Vec<T>,
 }
 
-impl<T> MatrixStack<T> {
-    pub fn top(&mut self) -> Option<&T> {
+impl<T: Clone> MatrixStack<T> {
+    pub fn top(&self) -> Option<T> {
         match self.inner.len() {
             0 => None,
-            n => Some(&self.inner[n - 1]),
+            n => Some(self.inner[n - 1].clone()),
         }
     }
 

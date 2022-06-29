@@ -82,9 +82,9 @@ impl MGLOp {
     fn op_push_matrix(&self) -> Result<()> {
         let ctx = mgl::ctx()?;
         let mode = ctx.matrix_mode as usize;
-
-        let m = ctx.matrix_stack[mode].pop().ok_or(MGLError::EINVALID)?;
-        ctx.matrix_stack[mode].push(m);
+        let stack = &mut ctx.matrix_stack[mode];
+        let m = stack.top().ok_or(MGLError::EINVALID)?;
+        stack.push(m);
 
         ctx.matrix_model_projection_updated = ctx.matrix_mode <= 1;
         Ok(())

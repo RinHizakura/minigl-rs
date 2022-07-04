@@ -44,3 +44,17 @@ impl MGLMatrixMode {
         }
     }
 }
+
+pub enum MGLVertexMode {
+    ModeNone, // this is used to represent when we are not in the begin scope
+    ModeTriangles,
+}
+
+impl MGLVertexMode {
+    pub fn idx(&self) -> usize {
+        match self {
+            MGLVertexMode::ModeNone => 0,
+            MGLVertexMode::ModeTriangles => 1,
+        }
+    }
+}

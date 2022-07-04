@@ -3,6 +3,7 @@ mod rgb;
 mod clear;
 mod matrix;
 mod plot;
+mod vertex;
 
 use crate::err::MGLError;
 
@@ -14,6 +15,7 @@ pub const OP_MATRIX_MODE: usize = 3;
 pub const OP_LOAD_IDENTITY: usize = 4;
 pub const OP_PUSH_MATRIX: usize = 5;
 pub const OP_ROTATE: usize = 6;
+pub const OP_BEGIN: usize = 7;
 
 union MGLParam {
     pub op: usize,
@@ -65,7 +67,11 @@ impl MGLOp {
                 let x = unsafe { self.p[2].f };
                 let y = unsafe { self.p[3].f };
                 let z = unsafe { self.p[4].f };
-                matrix::op_rotate(angle,x,y,z)?
+                matrix::op_rotate(angle, x, y, z)?
+            }
+            OP_BEGIN => {
+                let t = unsafe { self.p[1].u } as u8;
+                vertex::op_begin(t)?;
             }
             _ => todo!(),
         }

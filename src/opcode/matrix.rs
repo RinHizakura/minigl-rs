@@ -40,12 +40,11 @@ pub fn op_push_matrix() -> Result<()> {
     Ok(())
 }
 
-pub fn op_rotate(angle: f32, x: f32, y:f32, z:f32) -> Result<()> {
+pub fn op_rotate(angle: f32, x: f32, y: f32, z: f32) -> Result<()> {
     let ctx = mgl::ctx()?;
 
-    let dir_code = ((x != 0.0) as usize) << 2 |
-                   ((y != 0.0) as usize) << 1 |
-                   ((z != 0.0) as usize) << 0;
+    let dir_code =
+        ((x != 0.0) as usize) << 2 | ((y != 0.0) as usize) << 1 | ((z != 0.0) as usize) << 0;
 
     // http://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
     let (angle_deg, m2);
@@ -53,9 +52,7 @@ pub fn op_rotate(angle: f32, x: f32, y:f32, z:f32) -> Result<()> {
         1 => {
             if z < 0.0 {
                 angle_deg = Deg(-angle);
-            }
-            else
-            {
+            } else {
                 angle_deg = Deg(angle);
             }
             m2 = Matrix4::from_angle_z(angle_deg);
@@ -63,9 +60,7 @@ pub fn op_rotate(angle: f32, x: f32, y:f32, z:f32) -> Result<()> {
         2 => {
             if y < 0.0 {
                 angle_deg = Deg(-angle);
-            }
-            else
-            {
+            } else {
                 angle_deg = Deg(angle);
             }
             m2 = Matrix4::from_angle_y(angle_deg);
@@ -73,9 +68,7 @@ pub fn op_rotate(angle: f32, x: f32, y:f32, z:f32) -> Result<()> {
         4 => {
             if x < 0.0 {
                 angle_deg = Deg(-angle);
-            }
-            else
-            {
+            } else {
                 angle_deg = Deg(angle);
             }
             m2 = Matrix4::from_angle_x(angle_deg);

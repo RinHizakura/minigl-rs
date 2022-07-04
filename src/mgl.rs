@@ -19,9 +19,14 @@ pub struct MGLContext {
     pub zb: ZBuffer,
     pub clear_color: Vector4<u8>,
     pub textsize: MGLTextSize,
+
     pub matrix_stack: [MatrixStack<Matrix4<f32>>; 3],
+    pub matrix_model_projection: Option<Matrix4<f32>>,
     pub matrix_mode: u8,
     pub matrix_model_projection_updated: bool,
+
+    pub vertex_begin_type: u8,
+    pub vertex_cnt: usize,
 }
 
 impl MGLContext {
@@ -36,8 +41,12 @@ impl MGLContext {
             },
             textsize: MGLTextSize::TextSize32x32,
             matrix_stack: Default::default(),
+            matrix_model_projection: None,
             matrix_mode: 0,
             matrix_model_projection_updated: false,
+
+            vertex_begin_type: 0,
+            vertex_cnt: 0,
         }
     }
 }
@@ -194,13 +203,20 @@ pub fn push_matrix() -> Result<()> {
     Ok(())
 }
 
-pub fn rotate(angle:f32, x:f32, y:f32, z:f32) -> Result<()> {
+pub fn rotate(angle: f32, x: f32, y: f32, z: f32) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_ROTATE);
     op.add_param_f(angle);
     op.add_param_f(x);
     op.add_param_f(y);
     op.add_param_f(z);
     op.run_op()?;
+
+    Ok(())
+}
+
+pub fn begin(mode: MGLVertexMode) -> Result<()> {
+    let mut op = MGLOp::new(opcode::OP_BEGIN);
+    op.add_param_u(mode.idx());
 
     Ok(())
 }

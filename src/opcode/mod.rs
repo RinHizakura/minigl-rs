@@ -16,6 +16,7 @@ pub const OP_LOAD_IDENTITY: usize = 4;
 pub const OP_PUSH_MATRIX: usize = 5;
 pub const OP_ROTATE: usize = 6;
 pub const OP_BEGIN: usize = 7;
+pub const OP_COLOR: usize = 8;
 
 union MGLParam {
     pub op: usize,
@@ -72,6 +73,13 @@ impl MGLOp {
             OP_BEGIN => {
                 let t = unsafe { self.p[1].u } as u8;
                 vertex::op_begin(t)?;
+            }
+            OP_COLOR => {
+                let a = unsafe { self.p[1].u } as u8;
+                let r = unsafe { self.p[2].u } as u8;
+                let g = unsafe { self.p[3].u } as u8;
+                let b = unsafe { self.p[4].u } as u8;
+                vertex::op_color(a, r, g, b)?;
             }
             _ => todo!(),
         }

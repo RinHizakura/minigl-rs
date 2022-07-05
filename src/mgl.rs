@@ -17,6 +17,7 @@ use cgmath::*;
 
 pub struct MGLContext {
     pub zb: ZBuffer,
+    pub current_color: Vector4<u8>,
     pub clear_color: Vector4<u8>,
     pub textsize: MGLTextSize,
 
@@ -34,6 +35,12 @@ impl MGLContext {
         MGLContext {
             zb: zb,
             clear_color: Vector4 {
+                x: 0x00, // a
+                y: 0x00, // r
+                z: 0x00, // g
+                w: 0x00, // b
+            },
+            current_color: Vector4 {
                 x: 0x00, // a
                 y: 0x00, // r
                 z: 0x00, // g
@@ -218,5 +225,20 @@ pub fn begin(mode: MGLVertexMode) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_BEGIN);
     op.add_param_u(mode.idx());
 
+    Ok(())
+}
+
+pub fn color4i(a:usize, r:usize, g:usize, b:usize) -> Result<()> {
+    let mut op = MGLOp::new(opcode::OP_COLOR);
+    op.add_param_u(a);
+    op.add_param_u(r);
+    op.add_param_u(g);
+    op.add_param_u(b);
+
+    Ok(())
+}
+
+pub fn color3i(r:usize, g:usize, b:usize) -> Result<()> {
+    color4i(0xff, r, g, b)?;
     Ok(())
 }

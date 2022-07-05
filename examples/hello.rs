@@ -66,6 +66,8 @@ fn main() {
         mgl::push_matrix().expect("error: MGL push matrix");
         let angle = 60.0;
         mgl::rotate(angle, 0.0, 0.0, 1.0).expect("error: MGL rotate");
+        mgl::begin(MGLVertexMode::ModeTriangles).expect("error: MGL begin");
+        mgl::color3i(0x33, 0x33, 0xff).expect("error: MGL color3i");
 
         mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
 

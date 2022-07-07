@@ -1,6 +1,7 @@
 use std::fmt;
 
 pub enum MGLError {
+    EPERM,
     EMEM,
     EFAULT,
     EINVALID,

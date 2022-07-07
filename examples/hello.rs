@@ -68,6 +68,7 @@ fn main() {
         mgl::rotate(angle, 0.0, 0.0, 1.0).expect("error: MGL rotate");
         mgl::begin(MGLVertexMode::ModeTriangles).expect("error: MGL begin");
         mgl::color3i(0x33, 0x33, 0xff).expect("error: MGL color3i");
+        mgl::vertex3f(-0.8, -0.8, 0.2).expect("error: MGL vertex3f");
 
         mgl::draw_text("Hello\n World!", 0, 0, MGLColor::RED).expect("error: MGL draw text");
 

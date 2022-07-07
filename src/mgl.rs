@@ -26,7 +26,7 @@ pub struct MGLContext {
     pub matrix_mode: u8,
     pub matrix_model_projection_updated: bool,
 
-    pub vertex_begin_type: u8,
+    pub vertex_begin_type: usize,
     pub vertex_cnt: usize,
 }
 
@@ -228,7 +228,7 @@ pub fn begin(mode: MGLVertexMode) -> Result<()> {
     Ok(())
 }
 
-pub fn color4i(a:usize, r:usize, g:usize, b:usize) -> Result<()> {
+pub fn color4i(a: usize, r: usize, g: usize, b: usize) -> Result<()> {
     let mut op = MGLOp::new(opcode::OP_COLOR);
     op.add_param_u(a);
     op.add_param_u(r);
@@ -238,7 +238,22 @@ pub fn color4i(a:usize, r:usize, g:usize, b:usize) -> Result<()> {
     Ok(())
 }
 
-pub fn color3i(r:usize, g:usize, b:usize) -> Result<()> {
+pub fn color3i(r: usize, g: usize, b: usize) -> Result<()> {
     color4i(0xff, r, g, b)?;
+    Ok(())
+}
+
+pub fn vertex4f(x: f32, y: f32, z: f32, w: f32) -> Result<()> {
+    let mut op = MGLOp::new(opcode::OP_VERTEX);
+    op.add_param_f(x);
+    op.add_param_f(y);
+    op.add_param_f(z);
+    op.add_param_f(w);
+
+    Ok(())
+}
+
+pub fn vertex3f(x: f32, y: f32, z: f32) -> Result<()> {
+    vertex4f(x, y, z, 1.0)?;
     Ok(())
 }

@@ -17,6 +17,7 @@ pub const OP_PUSH_MATRIX: usize = 5;
 pub const OP_ROTATE: usize = 6;
 pub const OP_BEGIN: usize = 7;
 pub const OP_COLOR: usize = 8;
+pub const OP_VERTEX: usize = 9;
 
 union MGLParam {
     pub op: usize,
@@ -71,7 +72,7 @@ impl MGLOp {
                 matrix::op_rotate(angle, x, y, z)?
             }
             OP_BEGIN => {
-                let t = unsafe { self.p[1].u } as u8;
+                let t = unsafe { self.p[1].u };
                 vertex::op_begin(t)?;
             }
             OP_COLOR => {

@@ -45,9 +45,10 @@ impl MGLMatrixMode {
     }
 }
 
+#[repr(u8)]
 pub enum MGLVertexMode {
-    ModeNone, // this is used to represent when we are not in the begin scope
-    ModeTriangles,
+    ModeNone = 0, // this is used to represent when we are not in the begin scope
+    ModeTriangles = 1,
 }
 
 impl MGLVertexMode {
@@ -56,5 +57,14 @@ impl MGLVertexMode {
             MGLVertexMode::ModeNone => 0,
             MGLVertexMode::ModeTriangles => 1,
         }
+    }
+}
+
+impl From<usize> for MGLVertexMode {
+    fn from(v: usize) -> Self {
+        match v {
+            1 => return MGLVertexMode::ModeTriangles,
+            _ => return MGLVertexMode::ModeNone,
+        };
     }
 }

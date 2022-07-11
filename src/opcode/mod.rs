@@ -82,6 +82,13 @@ impl MGLOp {
                 let b = unsafe { self.p[4].u } as u8;
                 vertex::op_color(a, r, g, b)?;
             }
+            OP_VERTEX => {
+                let x = unsafe { self.p[1].f };
+                let y = unsafe { self.p[2].f };
+                let z = unsafe { self.p[3].f };
+                let w = unsafe { self.p[4].f };
+                vertex::op_vertex(x, y, z, w)?;
+            }
             _ => todo!(),
         }
 

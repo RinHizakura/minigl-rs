@@ -39,11 +39,31 @@ pub fn op_color(a: u8, r: u8, g: u8, b: u8) -> Result<()> {
     Ok(())
 }
 
+fn draw_triangle<T>(v1: Vertex<T>, v2: Vertex<T>, v3: Vertex<T>) -> Result<()> {
+    // FIXME: Simply assume that no clipping is required
+    todo!();
+}
+
+fn vertex_triangles() -> Result<()> {
+    let ctx = mgl::ctx()?;
+
+    if ctx.vertex_cnt == 3 {
+        let v1 = ctx.vertex_stack.pop().ok_or(MGLError::EFAULT)?;
+        let v2 = ctx.vertex_stack.pop().ok_or(MGLError::EFAULT)?;
+        let v3 = ctx.vertex_stack.pop().ok_or(MGLError::EFAULT)?;
+        draw_triangle(v1, v2, v3)?;
+        ctx.vertex_cnt = 0;
+    }
+
+    Ok(())
+}
+
 pub fn op_vertex(x: f32, y: f32, z: f32, w: f32) -> Result<()> {
     let ctx = mgl::ctx()?;
 
+    let begin_type = ctx.vertex_begin_type;
     /* should locate in the begin scope */
-    if ctx.vertex_begin_type == MGLVertexMode::ModeNone.idx() {
+    if begin_type == MGLVertexMode::ModeNone.idx() {
         return Err(MGLError::EPERM);
     }
 
@@ -56,7 +76,11 @@ pub fn op_vertex(x: f32, y: f32, z: f32, w: f32) -> Result<()> {
     v.transform(m);
     ctx.vertex_stack.push(v);
 
-    todo!();
+    /* draw the vertex if they form a new area */
+    match begin_type.into() {
+        MGLVertexMode::ModeTriangles => vertex_triangles()?,
+        _ => todo!(),
+    };
 
     Ok(())
 }

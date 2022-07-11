@@ -1,8 +1,8 @@
-pub struct MatrixStack<T> {
+pub struct VecStack<T> {
     inner: Vec<T>,
 }
 
-impl<T: Clone> MatrixStack<T> {
+impl<T: Clone> VecStack<T> {
     pub fn top(&self) -> Option<T> {
         match self.inner.len() {
             0 => None,
@@ -19,9 +19,9 @@ impl<T: Clone> MatrixStack<T> {
     }
 }
 
-impl<T> Default for MatrixStack<T> {
+impl<T> Default for VecStack<T> {
     fn default() -> Self {
-        MatrixStack {
+        VecStack {
             inner: Default::default(),
         }
     }

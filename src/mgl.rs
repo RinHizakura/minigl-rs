@@ -1,9 +1,10 @@
 use crate::config::*;
 use crate::err::MGLError;
 use crate::font8x8::*;
-use crate::matrix_stack::*;
 use crate::opcode;
 use crate::opcode::MGLOp;
+use crate::vec_stack::*;
+use crate::vertex::*;
 use crate::zbuffer::ZBuffer;
 use std::sync::Once;
 
@@ -21,11 +22,12 @@ pub struct MGLContext {
     pub clear_color: Vector4<u8>,
     pub textsize: MGLTextSize,
 
-    pub matrix_stack: [MatrixStack<Matrix4<f32>>; 3],
+    pub matrix_stack: [VecStack<Matrix4<f32>>; 3],
     pub matrix_model_projection: Option<Matrix4<f32>>,
     pub matrix_mode: u8,
     pub matrix_model_projection_updated: bool,
 
+    pub vertex_stack: VecStack<Vertex<f32>>,
     pub vertex_begin_type: usize,
     pub vertex_cnt: usize,
 }
@@ -52,6 +54,7 @@ impl MGLContext {
             matrix_mode: 0,
             matrix_model_projection_updated: false,
 
+            vertex_stack: Default::default(),
             vertex_begin_type: 0,
             vertex_cnt: 0,
         }

@@ -72,6 +72,7 @@ pub fn op_vertex(x: f32, y: f32, z: f32, w: f32) -> Result<()> {
 
     // TODO: transfrom, should consider when lighting enabled
     let mut v = Vertex::new(x, y, z, w);
+    v.set_color(ctx.current_color);
     let m = ctx.matrix_model_projection.ok_or(MGLError::EFAULT)?;
     v.transform(m);
     ctx.vertex_stack.push(v);

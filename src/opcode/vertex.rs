@@ -75,6 +75,10 @@ pub fn op_vertex(x: f32, y: f32, z: f32, w: f32) -> Result<()> {
     v.set_color(ctx.current_color);
     let m = ctx.matrix_model_projection.ok_or(MGLError::EFAULT)?;
     v.transform(m);
+
+    /* Transform to viewpoint vertex */
+    v.to_viewpoint();
+
     ctx.vertex_stack.push(v);
 
     /* draw the vertex if they form a new area */

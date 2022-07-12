@@ -5,6 +5,7 @@ use crate::opcode;
 use crate::opcode::MGLOp;
 use crate::vec_stack::*;
 use crate::vertex::*;
+use crate::viewport::*;
 use crate::zbuffer::ZBuffer;
 use std::sync::Once;
 
@@ -30,10 +31,14 @@ pub struct MGLContext {
     pub vertex_stack: VecStack<Vertex<f32>>,
     pub vertex_begin_type: usize,
     pub vertex_cnt: usize,
+
+    pub view_port: ViewPort<f32>,
 }
 
 impl MGLContext {
     pub fn new(zb: ZBuffer) -> Self {
+        let xsize = zb.xsize;
+        let ysize = zb.ysize;
         MGLContext {
             zb: zb,
             clear_color: Vector4 {
@@ -57,6 +62,8 @@ impl MGLContext {
             vertex_stack: Default::default(),
             vertex_begin_type: 0,
             vertex_cnt: 0,
+
+            view_port: ViewPort::new(0.0, 0.0, xsize as f32, ysize as f32),
         }
     }
 }

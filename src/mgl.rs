@@ -32,7 +32,7 @@ pub struct MGLContext {
     pub vertex_begin_type: usize,
     pub vertex_cnt: usize,
 
-    pub view_port: ViewPort<f32>,
+    pub view_port: ViewPort,
 }
 
 impl MGLContext {
